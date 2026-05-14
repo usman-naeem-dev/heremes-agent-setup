@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent vs OpenClaw — Honest Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#09090B; --s1:#0F0F12; --s2:#18181B; --border:#27272A;
+    --hermes:#F97316; --hermes2:#FED7AA;
+    --openclaw:#3B82F6; --openclaw2:#BFDBFE;
+    --green:#22C55E; --red:#EF4444; --yellow:#EAB308;
+    --text:#FAFAFA; --text2:#A1A1AA; --muted:#3F3F46;
+    --sans:'Inter',sans-serif; --mono:'JetBrains Mono',monospace; --display:'Bebas Neue',sans-serif;
+    --sw:260px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{
+    position:fixed; top:0; left:0; width:var(--sw); height:100vh;
+    background:#0C0C0F; border-right:1px solid var(--border);
+    display:flex; flex-direction:column; z-index:100; overflow-y:auto;
+  }
+  .sb-head{padding:22px 18px 14px; border-bottom:1px solid var(--border);}
+  .sb-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .sb-name{font-family:var(--display);font-size:17px;letter-spacing:0.05em;line-height:1.1;}
+  .sb-name .h{color:var(--hermes);} .sb-name .o{color:var(--openclaw);}
+  .sb-dots{display:flex;gap:5px;margin-top:12px;}
+  .sdt{width:11px;height:11px;border-radius:50%;}
+  .sdt-r{background:#FF5F56;} .sdt-y{background:#FFBD2E;} .sdt-g{background:#27C93F;}
+
+  /* flow */
+  .sb-flow{padding:14px 18px; border-bottom:1px solid var(--border);}
+  .sb-section-lbl{font-family:var(--mono);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .flow-pill{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:6px;font-family:var(--mono);font-size:10.5px;line-height:1.4;margin-bottom:5px;}
+  .flow-pill:last-child{margin-bottom:0;}
+  .fp-red{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#FCA5A5;}
+  .fp-green{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);color:#86EFAC;}
+  .fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:2px;}
+  .fdot-r{background:var(--red);} .fdot-g{background:var(--green);}
+
+  /* nav items */
+  .sb-nav{padding:14px 18px; flex:1;}
+  .nav-a{
+    display:flex; align-items:flex-start; gap:11px;
+    padding:9px 11px; border-radius:7px; cursor:pointer;
+    text-decoration:none; border:1px solid transparent;
+    margin-bottom:3px; transition:all 0.15s;
+  }
+  .nav-a:hover{background:rgba(249,115,22,0.07);border-color:rgba(249,115,22,0.15);}
+  .nav-a.active{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);}
+  .nav-num{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--muted);min-width:22px;padding-top:1px;transition:color 0.15s;}
+  .nav-a:hover .nav-num,.nav-a.active .nav-num{color:var(--hermes);}
+  .nav-info h4{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.2;}
+  .nav-info span{font-family:var(--mono);font-size:9.5px;color:var(--muted);}
+  .nav-a.active .nav-info h4{color:var(--hermes2);}
+
+  /* stats */
+  .sb-stats{padding:14px 18px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .stat{background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:9px 10px;text-align:center;}
+  .stat-n{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--hermes);line-height:1;}
+  .stat-n.g{color:var(--green);font-size:13px;margin-top:2px;}
+  .stat-l{font-family:var(--mono);font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+
+  /* ── MAIN ── */
+  .main{margin-left:var(--sw);}
+
+  /* hero */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 48px;position:relative;overflow:hidden;}
+  .hero-glow{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 60% 50% at 25% 50%,rgba(249,115,22,0.12) 0%,transparent 60%),
+               radial-gradient(ellipse 60% 50% at 75% 50%,rgba(59,130,246,0.12) 0%,transparent 60%);}
+  .badge{font-family:var(--display);font-size:12px;letter-spacing:0.3em;color:var(--text2);background:var(--s2);border:1px solid var(--border);padding:5px 18px;border-radius:4px;margin-bottom:28px;display:inline-block;}
+  .hero-title{font-family:var(--display);font-size:clamp(56px,8vw,100px);line-height:0.95;letter-spacing:0.02em;margin-bottom:20px;}
+  .hero-title .h{color:var(--hermes);} .hero-title .o{color:var(--openclaw);}
+  .hero-sub{font-family:var(--mono);font-size:13px;color:var(--text2);max-width:480px;line-height:1.8;margin-bottom:40px;}
+  .vpill{font-family:var(--mono);font-size:11px;padding:9px 22px;border-radius:6px;border:1px solid var(--yellow);color:var(--yellow);background:rgba(234,179,8,0.08);letter-spacing:0.05em;}
+
+  /* section */
+  .section{max-width:940px;margin:0 auto;padding:72px 40px;}
+  .sec-lbl{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--hermes);margin-bottom:9px;}
+  .sec-title{font-family:var(--display);font-size:clamp(34px,5vw,52px);letter-spacing:0.03em;margin-bottom:44px;line-height:1.0;}
+  .sec-title span{color:var(--hermes);}
+  .divider{border:none;border-top:1px solid var(--border);margin:0 40px;}
+
+  /* steps */
+  .steps{display:flex;flex-direction:column;}
+  .step{display:grid;grid-template-columns:72px 1fr;position:relative;}
+  .step::before{content:'';position:absolute;left:36px;top:50px;bottom:0;width:2px;background:linear-gradient(var(--border),transparent);}
+  .step:last-child::before{display:none;}
+  .step-l{display:flex;align-items:flex-start;justify-content:center;padding-top:6px;}
+  .step-c{width:40px;height:40px;border-radius:50%;background:rgba(249,115,22,0.12);border:2px solid rgba(249,115,22,0.4);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:18px;color:var(--hermes);flex-shrink:0;}
+  .step-b{padding:2px 0 36px 20px;}
+  .step-b h3{font-size:17px;font-weight:700;margin-bottom:5px;}
+  .step-b p{font-family:var(--mono);font-size:11.5px;color:var(--text2);line-height:1.7;}
+  .cmd{margin-top:10px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-family:var(--mono);font-size:11.5px;color:var(--green);}
+  .cmd::before{content:'$ ';color:var(--muted);}
+  .warn{margin-top:10px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:7px;padding:10px 14px;font-family:var(--mono);font-size:11.5px;color:#F87171;line-height:1.6;}
+  .tip{margin-top:10px;background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);border-radius:7px;padding:10px 14px;font-family:var(--mono);font-size:11.5px;color:var(--green);line-height:1.6;}
+  .stag{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:9.5px;padding:3px 9px;border-radius:4px;letter-spacing:0.05em;}
+
+  /* terminal */
+  .term{background:#0D1117;border:1px solid #30363D;border-radius:11px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.5);}
+  .term-bar{background:#161B22;padding:11px 14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #30363D;}
+  .td{width:11px;height:11px;border-radius:50%;}
+  .td1{background:#FF5F56;} .td2{background:#FFBD2E;} .td3{background:#27C93F;}
+  .term-ttl{font-family:var(--mono);font-size:11px;color:#8B949E;margin-left:6px;}
+  .term-b{padding:18px;font-family:var(--mono);font-size:11.5px;line-height:1.8;}
+  .tc{color:#79C0FF;} .to{color:#8B949E;} .tok{color:#3FB950;} .ti{color:#D2A8FF;} .th{color:#F97316;font-weight:600;}
+  .cursor{display:inline-block;width:7px;height:13px;background:var(--hermes);border-radius:1px;animation:blink 1s step-end infinite;vertical-align:middle;}
+
+  /* skill flow */
+  .sf{background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:32px;}
+  .sfnodes{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;}
+  .sfnode{background:var(--bg);border:2px solid rgba(249,115,22,0.3);border-radius:9px;padding:14px 12px;width:136px;text-align:center;}
+  .sfnode .ic{font-size:20px;margin-bottom:5px;display:block;}
+  .sfnode h4{font-size:10.5px;font-weight:700;color:var(--hermes2);margin-bottom:3px;}
+  .sfnode p{font-family:var(--mono);font-size:9px;color:var(--text2);line-height:1.5;}
+  .sfarr{font-size:18px;color:var(--muted);padding:0 6px;animation:ap 1.8s ease infinite;}
+
+  /* pros cons */
+  .pcg{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+  .pcc{background:var(--s1);}
+  .pch{padding:14px 18px;font-family:var(--mono);font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+  .pch.pro{color:var(--green);background:rgba(34,197,94,0.05);}
+  .pch.con{color:var(--red);background:rgba(239,68,68,0.05);}
+  .pci{padding:12px 18px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;color:var(--text2);line-height:1.6;display:flex;gap:9px;}
+  .pci:last-child{border-bottom:none;}
+  .dg{color:var(--green);flex-shrink:0;} .dr{color:var(--red);flex-shrink:0;}
+
+  /* comparison */
+  .ct{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;}
+  .ct th{padding:11px 16px;background:var(--s2);color:var(--text2);font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;}
+  .ct td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .ct tr:last-child td{border-bottom:none;}
+  .ct tr:hover td{background:rgba(249,115,22,0.03);}
+  .ck{color:var(--green);} .cx{color:var(--red);} .cp{color:var(--yellow);}
+  .cw{color:var(--hermes);font-weight:600;} .cw2{color:#60A5FA;font-weight:600;}
+
+  /* verdict */
+  .vg{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .vc{border-radius:13px;padding:24px;border:1px solid;}
+  .vc-h{background:rgba(249,115,22,0.04);border-color:rgba(249,115,22,0.35);}
+  .vc-o{background:rgba(59,130,246,0.04);border-color:rgba(59,130,246,0.35);}
+  .vl{font-family:var(--mono);font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:10px;}
+  .vl.h{color:var(--hermes);} .vl.o{color:var(--openclaw);}
+  .vc h3{font-family:var(--display);font-size:26px;letter-spacing:0.04em;margin-bottom:14px;}
+  .vi{padding:9px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;color:var(--text2);display:flex;gap:9px;align-items:flex-start;line-height:1.6;}
+  .vi:last-of-type{border-bottom:none;}
+
+  /* final */
+  .fb{background:linear-gradient(135deg,rgba(249,115,22,0.07),rgba(59,130,246,0.07));border:1px solid var(--border);border-radius:15px;padding:36px;text-align:center;}
+  .ft{font-family:var(--display);font-size:clamp(30px,4vw,48px);letter-spacing:0.04em;margin-bottom:14px;}
+  .fd{font-family:var(--mono);font-size:12px;color:var(--text2);max-width:580px;margin:0 auto 24px;line-height:1.8;}
+  .fps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .fp{font-family:var(--mono);font-size:11.5px;padding:9px 18px;border-radius:6px;border:1px solid;}
+  .fp-h{border-color:rgba(249,115,22,0.4);color:var(--hermes);background:rgba(249,115,22,0.08);}
+  .fp-o{border-color:rgba(59,130,246,0.4);color:#60A5FA;background:rgba(59,130,246,0.08);}
+
+  .footer{border-top:1px solid var(--border);padding:28px;text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--muted);}
+  .footer span{color:var(--hermes);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  @keyframes ap{0%,100%{opacity:0.2}50%{opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- ════════ SIDEBAR ════════ -->
+<nav class="sidebar">
+
+  <div class="sb-head">
+    <div class="sb-eyebrow">// HERMES REVIEW</div>
+    <div class="sb-name"><span class="h">HERMES</span> VS <span class="o">OPENCLAW</span></div>
+    <div class="sb-dots">
+      <div class="sdt sdt-r"></div>
+      <div class="sdt sdt-y"></div>
+      <div class="sdt sdt-g"></div>
+    </div>
+  </div>
+
+  <div class="sb-flow">
+    <div class="sb-section-lbl">// TUTORIAL FLOW</div>
+    <div class="flow-pill fp-red"><div class="fdot fdot-r"></div>People think Hermes is just another chatbot</div>
+    <div class="flow-pill fp-green"><div class="fdot fdot-g"></div>Show full live install + honest real verdict</div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section-lbl">// SECTIONS</div>
+
+    <a href="#hero" class="nav-a active">
+      <div class="nav-num">00</div>
+      <div class="nav-info"><h4>Hero</h4><span>Intro + Verdict</span></div>
+    </a>
+    <a href="#setup" class="nav-a">
+      <div class="nav-num">01</div>
+      <div class="nav-info"><h4>Live Setup</h4><span>Step by Step</span></div>
+    </a>
+    <a href="#demo" class="nav-a">
+      <div class="nav-num">02</div>
+      <div class="nav-info"><h4>Terminal Demo</h4><span>Skill Loop Live</span></div>
+    </a>
+    <a href="#loop" class="nav-a">
+      <div class="nav-num">03</div>
+      <div class="nav-info"><h4>Skill Loop</h4><span>How It Works</span></div>
+    </a>
+    <a href="#proscons" class="nav-a">
+      <div class="nav-num">04</div>
+      <div class="nav-info"><h4>Pros &amp; Cons</h4><span>Honest Take</span></div>
+    </a>
+    <a href="#headtohead" class="nav-a">
+      <div class="nav-num">05</div>
+      <div class="nav-info"><h4>Head to Head</h4><span>Feature Compare</span></div>
+    </a>
+    <a href="#verdict" class="nav-a">
+      <div class="nav-num">06</div>
+      <div class="nav-info"><h4>Verdict</h4><span>Who Should Switch</span></div>
+    </a>
+    <a href="#final" class="nav-a">
+      <div class="nav-num">07</div>
+      <div class="nav-info"><h4>Final Take</h4><span>Decision Made</span></div>
+    </a>
+  </div>
+
+  <div class="sb-stats">
+    <div class="stat"><div class="stat-n">3</div><div class="stat-l">Months OpenClaw</div></div>
+    <div class="stat"><div class="stat-n">1</div><div class="stat-l">Live Install</div></div>
+    <div class="stat"><div class="stat-n">2</div><div class="stat-l">Gotchas Found</div></div>
+    <div class="stat"><div class="stat-n g">Run Both</div><div class="stat-l">Verdict</div></div>
+  </div>
+
+</nav>
+
+<!-- ════════ MAIN ════════ -->
+<div class="main">
+
+<section id="hero" class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge">HONEST REVIEW · LIVE INSTALL · 2026</div>
+  <div class="hero-title"><span class="h">HERMES</span><br>VS<br><span class="o">OPENCLAW</span></div>
+  <div class="hero-sub">3 months of OpenClaw. First-time Hermes install. Live on video.<br>No fluff. Real setup. Real problems. Real verdict.</div>
+  <div class="vpill">⚖️ Verdict: Not replacing it yet — but you should be trying it</div>
+</section>
+
+<hr class="divider">
+
+<section id="setup" class="section">
+  <div class="sec-lbl">01 — Live Setup Walkthrough</div>
+  <h2 class="sec-title">Full Install, <span>Step by Step</span></h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-l"><div class="step-c">1</div></div>
+      <div class="step-b">
+        <h3>Get a VPS or use local machine</h3>
+        <p>Any VPS works. Or your own Mac Mini, Linux box, whatever. Hermes runs the same either way.</p>
+        <span class="stag" style="background:rgba(249,115,22,0.1);color:var(--hermes);border:1px solid rgba(249,115,22,0.2);">VPS or Local · Same process</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-l"><div class="step-c">2</div></div>
+      <div class="step-b">
+        <h3>Run the one-liner in your terminal</h3>
+        <p>Copy paste. Hit enter. It auto-installs Python, Node, Git — whatever it needs. You don't touch any of that.</p>
+        <div class="cmd">curl -fsSL https://get.hermes-ai.com | bash</div>
+        <span class="stag" style="background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2);">Under 60 seconds to install</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-l"><div class="step-c">3</div></div>
+      <div class="step-b">
+        <h3>OpenClaw detected? Create a NEW bot</h3>
+        <p>Don't say yes to "import from OpenClaw" unless you want your existing bot to break. Learned this the hard way.</p>
+        <div class="warn">⚠️ Using the same bot token as OpenClaw will break everything. Create a fresh Telegram bot via BotFather. Name it something new.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-l"><div class="step-c">4</div></div>
+      <div class="step-b">
+        <h3>Select your LLM provider</h3>
+        <p>Anthropic OAuth doesn't work with Hermes — real downside. Use OpenRouter instead and paste your API key. Pick Kimi K2.</p>
+        <div class="warn">⚠️ Anthropic direct auth is broken in Hermes. Route through OpenRouter if you want Claude. Adds friction + extra cost.</div>
+        <div class="tip">✓ OpenRouter works great. Set default model to Kimi K2 or any model you prefer.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-l"><div class="step-c">5</div></div>
+      <div class="step-b">
+        <h3>Configure settings &amp; Telegram</h3>
+        <p>Working dir → sudo → agent settings → session reset → Telegram token → user ID. If you get lost, ask Claude Code — it explains any prompt instantly.</p>
+        <span class="stag" style="background:rgba(59,130,246,0.1);color:#60A5FA;border:1px solid rgba(59,130,246,0.2);">Pro tip: ask Claude Code to explain any confusing prompt</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-l"><div class="step-c">6</div></div>
+      <div class="step-b">
+        <h3>Run hermes — you're in</h3>
+        <p>Type "hermes" in terminal. Send "hi" on Telegram. If it replies — you're live.</p>
+        <div class="tip">✓ "Hi, I'm Hermes, an AI assistant..." — You are alive, friend.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="demo" class="section">
+  <div class="sec-lbl">02 — Self-Improving Loop · Live Demo</div>
+  <h2 class="sec-title">Watch It <span>Build Its Own Skills</span></h2>
+  <div class="term">
+    <div class="term-bar"><div class="td td1"></div><div class="td td2"></div><div class="td td3"></div><span class="term-ttl">hermes agent — terminal</span></div>
+    <div class="term-b">
+      <div class="tc">$ hermes</div>
+      <div class="tok">✓ Hermes Agent started · Model: Kimi K2 via OpenRouter</div><br>
+      <div class="to">📱 Telegram message received:</div>
+      <div class="ti">"Every morning at 9:35 AM, find the top 3 AI news stories, summarize them, and send me a briefing on Telegram."</div><br>
+      <div class="to">→ Selecting tools...</div>
+      <div class="to">→ browser_use: opening search engine</div>
+      <div class="to">→ Reading AI news sources...</div>
+      <div class="to">→ Summarizing 3 stories...</div><br>
+      <div class="th">⚡ SKILL CAPTURE TRIGGERED (15 tool calls)</div>
+      <div class="ti">  cron_job_create × 2</div>
+      <div class="ti">  terminal: pip install chroni</div>
+      <div class="ti">  cron_job_list</div>
+      <div class="tok">  ✓ Skill saved: "daily_ai_briefing_v1"</div>
+      <div class="tok">  ✓ Cron job scheduled: 09:35 daily</div><br>
+      <div class="to">📱 Sending to Telegram...</div>
+      <div class="tok">✓ Done. Your daily AI briefing is scheduled.</div>
+      <div class="to">  → First run: in ~10 minutes · Repeats daily at 09:35</div><br>
+      <div class="ti">Want me to: 1) Change the time  2) Modify format  3) Make permanent?</div>
+      <div class="to">⏱ Total time: ~2 minutes <span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="loop" class="section">
+  <div class="sec-lbl">03 — What Makes It Different</div>
+  <h2 class="sec-title">The Self-Improving <span>Skill Loop</span></h2>
+  <div class="sf">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text2);text-align:center;margin-bottom:26px;">Every ~15 tool calls, Hermes pauses and does this automatically</div>
+    <div class="sfnodes">
+      <div class="sfnode"><span class="ic">📨</span><h4>Task Received</h4><p>You message on Telegram. Hermes gets the job.</p></div>
+      <div class="sfarr">→</div>
+      <div class="sfnode"><span class="ic">⚙️</span><h4>Executes</h4><p>Uses tools — browser, terminal, files.</p></div>
+      <div class="sfarr">→</div>
+      <div class="sfnode"><span class="ic">🧠</span><h4>Evaluates</h4><p>Pauses. Reviews what worked, what didn't.</p></div>
+      <div class="sfarr">→</div>
+      <div class="sfnode"><span class="ic">💾</span><h4>Saves Skill</h4><p>Packaged as reusable skill. Next run: instant.</p></div>
+    </div>
+    <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="padding:14px 16px;background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);border-radius:8px;font-family:var(--mono);font-size:11px;">
+        <div style="color:var(--hermes);font-weight:600;margin-bottom:4px;">✓ Hermes</div>
+        <div style="color:var(--text2);line-height:1.6;">Skill files auto-created. Gets sharper every use. Zero manual work from you.</div>
+      </div>
+      <div style="padding:14px 16px;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:8px;font-family:var(--mono);font-size:11px;">
+        <div style="color:#60A5FA;font-weight:600;margin-bottom:4px;">~ OpenClaw</div>
+        <div style="color:var(--text2);line-height:1.6;">No native loop. You build skill files yourself manually. Works, but you do all the work.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="proscons" class="section">
+  <div class="sec-lbl">04 — Honest Assessment</div>
+  <h2 class="sec-title">Real Pros & <span>Real Cons</span></h2>
+  <div class="pcg">
+    <div class="pcc">
+      <div class="pch pro">✓ What Hermes Does Well</div>
+      <div class="pci"><span class="dg">✓</span>Noticeably faster — even on a slower model (Kimi K2 vs Sonnet)</div>
+      <div class="pci"><span class="dg">✓</span>Self-improving skill loop — builds & refines skills automatically</div>
+      <div class="pci"><span class="dg">✓</span>One-liner install — auto-handles Python, Node, Git. 60 seconds</div>
+      <div class="pci"><span class="dg">✓</span>Works on any model — Claude, GPT, open-source, OpenRouter</div>
+      <div class="pci"><span class="dg">✓</span>Can import your OpenClaw memory (if done correctly)</div>
+      <div class="pci"><span class="dg">✓</span>Cron job scheduling built in — from one Telegram message</div>
+    </div>
+    <div class="pcc">
+      <div class="pch con">✗ Real Problems Found</div>
+      <div class="pci"><span class="dr">✗</span>Anthropic OAuth broken — can't use $200/mo Claude subscription directly</div>
+      <div class="pci"><span class="dr">✗</span>Need OpenRouter for Claude — adds friction and extra cost</div>
+      <div class="pci"><span class="dr">✗</span>Sharing OpenClaw bot token breaks your existing setup</div>
+      <div class="pci"><span class="dr">✗</span>Starts fresh — 3 months of history, trading bot, agents don't carry over</div>
+      <div class="pci"><span class="dr">✗</span>Migration easy to mess up if you rush it</div>
+      <div class="pci"><span class="dr">✗</span>Still early — rough edges, especially for Claude-first users</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="headtohead" class="section">
+  <div class="sec-lbl">05 — Feature by Feature</div>
+  <h2 class="sec-title">Head to <span>Head</span></h2>
+  <div class="term" style="border-radius:13px;overflow:hidden;">
+    <div class="term-bar"><div class="td td1"></div><div class="td td2"></div><div class="td td3"></div><span class="term-ttl">feature comparison</span></div>
+    <table class="ct">
+      <thead><tr><th>Feature</th><th style="color:var(--hermes);">Hermes Agent</th><th style="color:#60A5FA;">OpenClaw</th><th>Winner</th></tr></thead>
+      <tbody>
+        <tr><td>Speed</td><td><span class="ck">✓ Faster</span></td><td><span class="cp">~ Slower</span></td><td><span class="cw">Hermes</span></td></tr>
+        <tr><td>Auto Skill Building</td><td><span class="ck">✓ Built-in loop</span></td><td><span class="cx">✗ Manual only</span></td><td><span class="cw">Hermes</span></td></tr>
+        <tr><td>Claude Auth</td><td><span class="cx">✗ OAuth broken</span></td><td><span class="ck">✓ Works natively</span></td><td><span class="cw2">OpenClaw</span></td></tr>
+        <tr><td>Any LLM Provider</td><td><span class="ck">✓ Full flex</span></td><td><span class="ck">✓ Full flex</span></td><td><span style="color:var(--yellow);">Tie</span></td></tr>
+        <tr><td>Install Simplicity</td><td><span class="ck">✓ One-liner</span></td><td><span class="ck">✓ One-liner</span></td><td><span style="color:var(--yellow);">Tie</span></td></tr>
+        <tr><td>Existing History</td><td><span class="cx">✗ Starts fresh</span></td><td><span class="ck">✓ 3 months baked in</span></td><td><span class="cw2">OpenClaw</span></td></tr>
+        <tr><td>Cron / Scheduling</td><td><span class="ck">✓ Native + auto</span></td><td><span class="cp">~ Manual setup</span></td><td><span class="cw">Hermes</span></td></tr>
+        <tr><td>Memory Across Sessions</td><td><span class="ck">✓ Persistent</span></td><td><span class="ck">✓ Persistent</span></td><td><span style="color:var(--yellow);">Tie</span></td></tr>
+        <tr><td>Telegram Integration</td><td><span class="ck">✓ Native</span></td><td><span class="ck">✓ Native</span></td><td><span style="color:var(--yellow);">Tie</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="verdict" class="section">
+  <div class="sec-lbl">06 — Who Should Use What</div>
+  <h2 class="sec-title">The <span>Verdict</span></h2>
+  <div class="vg">
+    <div class="vc vc-h">
+      <div class="vl h">🟠 Use Hermes If...</div>
+      <h3>Starting Fresh</h3>
+      <div class="vi"><span>✓</span>You're new to AI agents and want the fastest, smartest starting point</div>
+      <div class="vi"><span>✓</span>You don't rely on Anthropic's $200/mo subscription directly</div>
+      <div class="vi"><span>✓</span>You want skills built automatically without maintaining files yourself</div>
+      <div class="vi"><span>✓</span>You care about speed — Hermes moves quicker even on slower models</div>
+      <div class="vi"><span>✓</span>You want scheduled tasks without any extra setup</div>
+    </div>
+    <div class="vc vc-o">
+      <div class="vl o">🔵 Stick With OpenClaw If...</div>
+      <h3>Already Running</h3>
+      <div class="vi"><span>→</span>You have months of history, tuned agents, and existing workflows</div>
+      <div class="vi"><span>→</span>You're Claude-first and rely on direct Anthropic auth</div>
+      <div class="vi"><span>→</span>Your trading bot, content agents, tools are already tuned</div>
+      <div class="vi"><span>→</span>You don't want to rebuild from scratch right now</div>
+      <div class="vi"><span>→</span>But: consider running both side by side — let Hermes learn</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="final" class="section">
+  <div class="fb">
+    <div class="ft">NOT REPLACING IT.<br>BUT TRY IT ANYWAY.</div>
+    <div class="fd">"Is it replacing OpenClaw? I don't think so. Not yet. Not today.<br>But it is the most interesting thing that's dropped in this space in a long time.<br>My plan: run both. OpenClaw stays as main. Hermes learns from scratch alongside it.<br>Let's see how fast it catches up."</div>
+    <div class="fps">
+      <span class="fp fp-h">🟠 Hermes: Running alongside</span>
+      <span class="fp fp-o">🔵 OpenClaw: Still main setup</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>Hermes Agent vs OpenClaw · Honest Review · <span>Voho AI — AI Vibe Club</span> · May 2026</p>
+</footer>
+
+</div>
+
+<script>
+  // Click to set active
+  function setActive(el) {
+    document.querySelectorAll('.nav-a').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+  document.querySelectorAll('.nav-a').forEach(a => {
+    a.addEventListener('click', function(){ setActive(this); });
+  });
+
+  // Auto-highlight on scroll
+  const ids = ['hero','setup','demo','loop','proscons','headtohead','verdict','final'];
+  const navLinks = document.querySelectorAll('.nav-a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(n => {
+          n.classList.remove('active');
+          if (n.getAttribute('href') === '#' + id) n.classList.add('active');
+        });
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '-60px 0px -55% 0px' });
+  ids.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+</script>
+</body>
+</html>
